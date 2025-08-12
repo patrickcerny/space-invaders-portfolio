@@ -1,7 +1,7 @@
-"use client";
+'use client';
 
-import { useEffect, useRef } from "react";
-import styles from "./page.module.css";
+import { useEffect, useRef } from 'react';
+import styles from './page.module.css';
 
 export default function Home() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -10,7 +10,7 @@ export default function Home() {
   useEffect(() => {
     const canvas = canvasRef.current;
     if (!canvas) return;
-    const ctx = canvas.getContext("2d");
+    const ctx = canvas.getContext('2d');
     if (!ctx) return;
 
     const width = canvas.width;
@@ -34,26 +34,26 @@ export default function Home() {
 
     const invaderData = [
       {
-        src: "https://upload.wikimedia.org/wikipedia/commons/a/a5/Instagram_icon.png",
-        url: "https://www.instagram.com",
+        src: 'https://upload.wikimedia.org/wikipedia/commons/a/a5/Instagram_icon.png',
+        url: 'https://www.instagram.com',
       },
       {
-        src: "https://upload.wikimedia.org/wikipedia/commons/4/44/Facebook_Logo.png",
-        url: "https://www.facebook.com",
+        src: 'https://upload.wikimedia.org/wikipedia/commons/4/44/Facebook_Logo.png',
+        url: 'https://www.facebook.com',
       },
       {
-        src: "https://upload.wikimedia.org/wikipedia/fr/c/c8/Twitter_Bird.svg",
-        url: "https://twitter.com",
+        src: 'https://upload.wikimedia.org/wikipedia/commons/a/a5/Instagram_icon.png',
+        url: 'https://www.instagram.com',
       },
       {
-        src: "https://upload.wikimedia.org/wikipedia/commons/9/9f/Youtube_logo.png",
-        url: "https://www.youtube.com",
+        src: 'https://upload.wikimedia.org/wikipedia/commons/4/44/Facebook_Logo.png',
+        url: 'https://www.facebook.com',
       },
     ];
 
     const invaders = invaderData.map((data, i) => {
       const img = new Image();
-      img.crossOrigin = "anonymous";
+      img.crossOrigin = 'anonymous';
       const inv = {
         x: 80 + i * 120,
         y: 60,
@@ -84,14 +84,14 @@ export default function Home() {
     }
 
     function keyDown(e: KeyboardEvent) {
-      if (e.key === "ArrowLeft") keys.current.left = true;
-      if (e.key === "ArrowRight") keys.current.right = true;
+      if (e.key === 'ArrowLeft') keys.current.left = true;
+      if (e.key === 'ArrowRight') keys.current.right = true;
     }
 
     function keyUp(e: KeyboardEvent) {
-      if (e.key === "ArrowLeft") keys.current.left = false;
-      if (e.key === "ArrowRight") keys.current.right = false;
-      if (e.key === "ArrowUp") shoot();
+      if (e.key === 'ArrowLeft') keys.current.left = false;
+      if (e.key === 'ArrowRight') keys.current.right = false;
+      if (e.key === 'ArrowUp') shoot();
     }
 
     function update() {
@@ -114,7 +114,7 @@ export default function Home() {
             b.y < inv.y + inv.height &&
             b.y + b.height > inv.y
           ) {
-            window.open(inv.url, "_blank");
+            window.open(inv.url, '_blank');
             invaders.splice(j, 1);
             bullets.splice(i, 1);
             break bulletsLoop;
@@ -126,10 +126,10 @@ export default function Home() {
     function draw() {
       ctx.clearRect(0, 0, width, height);
 
-      ctx.fillStyle = "white";
+      ctx.fillStyle = 'white';
       ctx.fillRect(player.x, player.y, player.width, player.height);
 
-      ctx.fillStyle = "red";
+      ctx.fillStyle = 'red';
       bullets.forEach((b) => ctx.fillRect(b.x, b.y, b.width, b.height));
 
       invaders.forEach((inv) => {
@@ -147,11 +147,11 @@ export default function Home() {
 
     loop();
 
-    window.addEventListener("keydown", keyDown);
-    window.addEventListener("keyup", keyUp);
+    window.addEventListener('keydown', keyDown);
+    window.addEventListener('keyup', keyUp);
     return () => {
-      window.removeEventListener("keydown", keyDown);
-      window.removeEventListener("keyup", keyUp);
+      window.removeEventListener('keydown', keyDown);
+      window.removeEventListener('keyup', keyUp);
     };
   }, []);
 
@@ -193,4 +193,3 @@ export default function Home() {
     </div>
   );
 }
-
