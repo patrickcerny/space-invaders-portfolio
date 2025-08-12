@@ -32,32 +32,16 @@ jobs:
           push: true
           tags: ghcr.io/${{ github.repository }}:latest
 
-      # Write SSH key as a file to preserve newlines
-      - name: Write SSH key
-        run: |
-          cat > id_ed25519 << 'EOF'
-          ${{ secrets.SSH_KEY }}
-          EOF
-          chmod 600 id_ed25519
-
-      - name: Deploy to VPS
+      - name: Deploy to VPS (password auth)
         uses: appleboy/ssh-action@v1.1.0
         with:
           host: ${{ secrets.SSH_HOST }}
           username: ${{ secrets.SSH_USER }}
-          key_path: id_ed25519
+          password: ${{ secrets.SSH_PASSWORD }} # <- set this in GitHub secrets
           port: 22
           command_timeout: 10m
           script: |
-            set -e
-            # OPTIONAL: login to GHCR on the VPS if your image is private
-            if [ -n "${GHCR_TOKEN}" ] && [ -n "${GHCR_USERNAME}" ]; then
-              echo "${GHCR_TOKEN}" | docker login ghcr.io -u "${GHCR_USERNAME}" --password-stdin
-            fi
             docker pull ghcr.io/${{ github.repository }}:latest
             docker stop space-invaders || true
             docker rm space-invaders || true
             docker run -d --name space-invaders -p 3000:3000 ghcr.io/${{ github.repository }}:latest
-        env:
-          GHCR_USERNAME: ${{ secrets.GHCR_USERNAME }} # set if image is private
-          GHCR_TOKEN: ${{ secrets.GHCR_TOKEN }} # PAT with read:packages
