@@ -54,15 +54,23 @@ export default function Home() {
     const invaders = invaderData.map((data, i) => {
       const img = new Image();
       img.crossOrigin = "anonymous";
-      img.src = data.src;
-      return {
+      const inv = {
         x: 80 + i * 120,
         y: 60,
         width: 50,
         height: 50,
         img,
         url: data.url,
+        loaded: false,
       };
+      img.onload = () => {
+        inv.loaded = true;
+      };
+      img.onerror = () => {
+        console.error(`Failed to load image: ${data.src}`);
+      };
+      img.src = data.src;
+      return inv;
     });
 
     function shoot() {
@@ -125,7 +133,7 @@ export default function Home() {
       bullets.forEach((b) => ctx.fillRect(b.x, b.y, b.width, b.height));
 
       invaders.forEach((inv) => {
-        if (inv.img.complete) {
+        if (inv.loaded) {
           ctx.drawImage(inv.img, inv.x, inv.y, inv.width, inv.height);
         }
       });
