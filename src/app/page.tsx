@@ -97,6 +97,19 @@ export default function Home() {
       }
     });
 
+    let targetDirection = 1;
+    let targetSteps = 0;
+    const targetInterval = setInterval(() => {
+      targets.current.forEach((t) => {
+        t.x += 10 * targetDirection;
+      });
+      targetSteps++;
+      if (targetSteps === 3) {
+        targetDirection *= -1;
+        targetSteps = 0;
+      }
+    }, 2000);
+
     function shoot() {
       setShowInstructions(false);
       bullets.push({
@@ -191,6 +204,7 @@ export default function Home() {
     return () => {
       window.removeEventListener("keydown", keyDown);
       window.removeEventListener("keyup", keyUp);
+      clearInterval(targetInterval);
     };
   }, []);
 
@@ -223,26 +237,28 @@ export default function Home() {
         </div>
       )}
       <div className={styles.controls}>
-        <button
-          className={styles.controlButton}
-          onMouseDown={startLeft}
-          onMouseUp={stopLeft}
-          onMouseLeave={stopLeft}
-          onTouchStart={startLeft}
-          onTouchEnd={stopLeft}
-        >
-          ◀
-        </button>
-        <button
-          className={styles.controlButton}
-          onMouseDown={startRight}
-          onMouseUp={stopRight}
-          onMouseLeave={stopRight}
-          onTouchStart={startRight}
-          onTouchEnd={stopRight}
-        >
-          ▶
-        </button>
+        <div className={styles.moveControls}>
+          <button
+            className={styles.controlButton}
+            onMouseDown={startLeft}
+            onMouseUp={stopLeft}
+            onMouseLeave={stopLeft}
+            onTouchStart={startLeft}
+            onTouchEnd={stopLeft}
+          >
+            ◀
+          </button>
+          <button
+            className={styles.controlButton}
+            onMouseDown={startRight}
+            onMouseUp={stopRight}
+            onMouseLeave={stopRight}
+            onTouchStart={startRight}
+            onTouchEnd={stopRight}
+          >
+            ▶
+          </button>
+        </div>
         <button
           className={styles.controlButton}
           onMouseDown={handleShoot}
