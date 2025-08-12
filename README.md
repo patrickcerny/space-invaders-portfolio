@@ -1,3 +1,14 @@
+# 👾 Space Invaders Portfolio
+
+> A playful experiment powered almost entirely by AI.
+> This repository is about **99% AI-generated**, exploring what Codex can do.
+> Think of it as a fun demo rather than a polished portfolio.
+> Built with ❤️ by curious humans and a lot of silicon.
+
+Blast a few pixel aliens and open dialog boxes or links along the way – this
+little game showcases what AI tooling can whip up with Next.js. Controls are as
+old-school as it gets: move with ◀ ▶ and fire with space/🚀.
+
 This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
 
 ## Getting Started
@@ -16,7 +27,8 @@ bun dev
 
 Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+You can start editing the game by modifying `src/app/page.tsx`. The page
+auto‑updates as you edit the file.
 
 This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
 
@@ -50,7 +62,9 @@ To enable deployments you must configure the following repository secrets:
 | ------ | ----------- |
 | `SSH_HOST` | VPS hostname or IP address |
 | `SSH_USER` | SSH user with permission to run Docker |
-| `SSH_KEY` | Private SSH key for the user |
+| `SSH_PASSWORD` | Password for the SSH user |
+| `GHCR_USERNAME` *(optional)* | Username for GitHub Container Registry |
+| `GHCR_TOKEN` *(optional)* | Token with `read:packages` for private images |
 
 The workflow publishes the image to GitHub Container Registry at `ghcr.io/<owner>/<repo>:latest` and then pulls and runs the container on your server.
 
