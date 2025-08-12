@@ -21,8 +21,9 @@ export default function Home() {
   useEffect(() => {
     const canvas = canvasRef.current;
     if (!canvas) return;
-    const ctx = canvas.getContext("2d");
-    if (!ctx) return;
+    const context = canvas.getContext("2d");
+    if (!context) return;
+    const ctx = context;
     ctx.imageSmoothingEnabled = false;
 
     const width = canvas.width;
