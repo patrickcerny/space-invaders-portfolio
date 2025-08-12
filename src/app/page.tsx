@@ -1,11 +1,22 @@
 "use client";
 
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import styles from "./page.module.css";
+import DialogTarget from "@/targets/DialogTarget";
+import LinkTarget from "@/targets/LinkTarget";
+import DeadTarget from "@/targets/DeadTarget";
+import Target from "@/targets/Target";
+import BaseInfoDialog from "@/components/dialogs/BaseInfoDialog";
+import ProjectsDialog from "@/components/dialogs/ProjectsDialog";
 
 export default function Home() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const keys = useRef({ left: false, right: false });
+  const [dialog, setDialog] = useState<"base" | "projects" | null>(null);
+  const [showInstructions, setShowInstructions] = useState(true);
+
+  const targets = useRef<Target[]>([]);
+  const shootRef = useRef<() => void>(() => {});
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -43,75 +54,71 @@ export default function Home() {
       speed: number;
     }[] = [];
 
-    const invaderData = [
+    const targetData = [
       {
-        src: "https://upload.wikimedia.org/wikipedia/commons/a/a5/Instagram_icon.png",
+        type: "dialog" as const,
+        src: "https://img.icons8.com/color/48/info--v1.png",
+        action: () => setDialog("base"),
+      },
+      {
+        type: "dialog" as const,
+        src: "https://img.icons8.com/color/48/code-file.png",
+        action: () => setDialog("projects"),
+      },
+      {
+        type: "link" as const,
+        src: "https://img.icons8.com/color/48/instagram-new.png",
         url: "https://www.instagram.com",
       },
       {
-        src: "https://upload.wikimedia.org/wikipedia/commons/4/44/Facebook_Logo.png",
-        url: "https://www.facebook.com",
-      },
-      {
-        src: "https://upload.wikimedia.org/wikipedia/fr/c/c8/Twitter_Bird.svg",
+        type: "link" as const,
+        src: "https://img.icons8.com/color/48/twitter--v1.png",
         url: "https://twitter.com",
       },
       {
-        src: "https://upload.wikimedia.org/wikipedia/commons/9/9f/Youtube_logo.png",
-        url: "https://www.youtube.com",
+        type: "dead" as const,
+        src: "https://img.icons8.com/color/48/skull.png",
       },
-      { dead: true },
-      { dead: true },
     ];
 
-    const invaders = invaderData.map((data, i) => {
-      const inv = {
-        x: 20 + i * 30,
-        y: 20,
-        width: 20,
-        height: 14,
-        url: data.url ?? null,
-        dead: !!data.dead,
-        img: null as HTMLImageElement | null,
-        loaded: false,
-      };
-      if (data.src) {
-        const img = new Image();
-        img.crossOrigin = "anonymous";
-        img.onload = () => {
-          inv.loaded = true;
-        };
-        img.onerror = () => {
-          console.error(`Failed to load image: ${data.src}`);
-          inv.loaded = true;
-        };
-        img.src = data.src;
-        inv.img = img;
-      } else {
-        inv.loaded = true;
+    targets.current = targetData.map((data, i) => {
+      const x = 20 + i * 30;
+      const y = 20;
+      const width = 20;
+      const height = 14;
+      switch (data.type) {
+        case "dialog":
+          return new DialogTarget(x, y, width, height, data.src, data.action);
+        case "link":
+          return new LinkTarget(x, y, width, height, data.src, data.url);
+        case "dead":
+          return new DeadTarget(x, y, width, height, data.src);
       }
-      return inv;
     });
 
     function shoot() {
+      setShowInstructions(false);
       bullets.push({
         x: player.x + player.width / 2,
         y: player.y,
-        rx: 1,
-        ry: 2,
+        rx: 2,
+        ry: 6,
         speed: 5,
       });
     }
 
+    shootRef.current = shoot;
+
     function keyDown(e: KeyboardEvent) {
+      setShowInstructions(false);
       if (e.key === "ArrowLeft") keys.current.left = true;
       if (e.key === "ArrowRight") keys.current.right = true;
+      if (e.key === " " || e.code === "Space") shoot();
     }
 
     function keyUp(e: KeyboardEvent) {
       if (e.key === "ArrowLeft") keys.current.left = false;
       if (e.key === "ArrowRight") keys.current.right = false;
-      if (e.key === "ArrowUp") shoot();
     }
 
     function update() {
@@ -126,18 +133,16 @@ export default function Home() {
 
       bulletsLoop: for (let i = bullets.length - 1; i >= 0; i--) {
         const b = bullets[i];
-        for (let j = 0; j < invaders.length; j++) {
-          const inv = invaders[j];
+        for (let j = 0; j < targets.current.length; j++) {
+          const t = targets.current[j];
           if (
-            b.x - b.rx < inv.x + inv.width &&
-            b.x + b.rx > inv.x &&
-            b.y - b.ry < inv.y + inv.height &&
-            b.y + b.ry > inv.y
+            b.x - b.rx < t.x + t.width &&
+            b.x + b.rx > t.x &&
+            b.y - b.ry < t.y + t.height &&
+            b.y + b.ry > t.y
           ) {
-            if (inv.url) {
-              window.open(inv.url, "_blank");
-              invaders.splice(j, 1);
-            }
+            t.onHit();
+            targets.current.splice(j, 1);
             bullets.splice(i, 1);
             break bulletsLoop;
           }
@@ -162,44 +167,14 @@ export default function Home() {
         })
       );
 
-      ctx.fillStyle = "yellow";
+      ctx.font = "12px serif";
+      ctx.textAlign = "center";
+      ctx.textBaseline = "middle";
       bullets.forEach((b) => {
-        ctx.beginPath();
-        ctx.ellipse(b.x, b.y, b.rx, b.ry, 0, 0, Math.PI * 2);
-        ctx.fill();
+        ctx.fillText("🚀", b.x, b.y);
       });
 
-      invaders.forEach((inv) => {
-        if (inv.img && inv.loaded) {
-          ctx.save();
-          ctx.beginPath();
-          ctx.ellipse(
-            inv.x + inv.width / 2,
-            inv.y + inv.height / 2,
-            inv.width / 2,
-            inv.height / 2,
-            0,
-            0,
-            Math.PI * 2
-          );
-          ctx.clip();
-          ctx.drawImage(inv.img, inv.x, inv.y, inv.width, inv.height);
-          ctx.restore();
-        } else {
-          ctx.fillStyle = "gray";
-          ctx.beginPath();
-          ctx.ellipse(
-            inv.x + inv.width / 2,
-            inv.y + inv.height / 2,
-            inv.width / 2,
-            inv.height / 2,
-            0,
-            0,
-            Math.PI * 2
-          );
-          ctx.fill();
-        }
-      });
+      targets.current.forEach((t) => t.draw(ctx));
     }
 
     function loop() {
@@ -218,10 +193,20 @@ export default function Home() {
     };
   }, []);
 
-  const startLeft = () => (keys.current.left = true);
+  const startLeft = () => {
+    setShowInstructions(false);
+    keys.current.left = true;
+  };
   const stopLeft = () => (keys.current.left = false);
-  const startRight = () => (keys.current.right = true);
+  const startRight = () => {
+    setShowInstructions(false);
+    keys.current.right = true;
+  };
   const stopRight = () => (keys.current.right = false);
+  const handleShoot = () => {
+    setShowInstructions(false);
+    shootRef.current();
+  };
 
   return (
     <div className={styles.gameContainer}>
@@ -231,6 +216,11 @@ export default function Home() {
         height={150}
         className={styles.canvas}
       />
+      {showInstructions && (
+        <div className={styles.instructions}>
+          Use ◀ ▶ to move, 🚀 or spacebar to shoot
+        </div>
+      )}
       <div className={styles.controls}>
         <button
           className={styles.controlButton}
@@ -252,7 +242,16 @@ export default function Home() {
         >
           ▶
         </button>
+        <button
+          className={styles.controlButton}
+          onMouseDown={handleShoot}
+          onTouchStart={handleShoot}
+        >
+          🚀
+        </button>
       </div>
+      {dialog === "base" && <BaseInfoDialog onClose={() => setDialog(null)} />}
+      {dialog === "projects" && <ProjectsDialog onClose={() => setDialog(null)} />}
     </div>
   );
 }
