@@ -8,22 +8,25 @@
 
 .canvas {
   width: 800px;
-  height: 600px;
+  height: 100vh;
   display: block;
   image-rendering: pixelated;
+  background-image: url(https://t4.ftcdn.net/jpg/03/90/22/93/360_F_390229338_frGUxS6LBVQjxGJD7FYaSlsnfqGQgnyB.jpg);
+  background-size: cover;
+  background-position: center;
 }
 
 .controls {
   position: absolute;
-  bottom: 20px;
+  bottom: 100px;
   right: 20px;
   display: flex;
   gap: 10px;
 }
 
 .controlButton {
-  width: 40px;
-  height: 40px;
+  width: 80px;
+  height: 80px;
   background: rgba(255, 255, 255, 0.2);
   color: white;
   border: 1px solid white;
@@ -34,4 +37,3 @@
 .controlButton:active {
   background: rgba(255, 255, 255, 0.4);
 }
-

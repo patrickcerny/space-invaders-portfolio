@@ -1,30 +1,30 @@
-"use client";
+'use client';
 
-import { useEffect, useRef, useState } from "react";
-import styles from "./page.module.css";
-import DialogTarget from "@/targets/DialogTarget";
-import LinkTarget from "@/targets/LinkTarget";
-import DeadTarget from "@/targets/DeadTarget";
-import Target from "@/targets/Target";
-import BaseInfoDialog from "@/components/dialogs/BaseInfoDialog";
-import ProjectsDialog from "@/components/dialogs/ProjectsDialog";
+import { useEffect, useRef, useState } from 'react';
+import styles from './page.module.css';
+import DialogTarget from '@/targets/DialogTarget';
+import LinkTarget from '@/targets/LinkTarget';
+import DeadTarget from '@/targets/DeadTarget';
+import Target from '@/targets/Target';
+import BaseInfoDialog from '@/components/dialogs/BaseInfoDialog';
+import ProjectsDialog from '@/components/dialogs/ProjectsDialog';
 
 export default function Home() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const keys = useRef({ left: false, right: false });
-  const [dialog, setDialog] = useState<"base" | "projects" | null>(null);
+  const [dialog, setDialog] = useState<'base' | 'projects' | null>(null);
 
   const targets = useRef<Target[]>([]);
 
   useEffect(() => {
     const canvas = canvasRef.current;
     if (!canvas) return;
-    const ctx = canvas.getContext("2d");
+    const ctx = canvas.getContext('2d');
     if (!ctx) return;
     ctx.imageSmoothingEnabled = false;
 
     const width = canvas.width;
-    const height = canvas.height;
+    const height = canvas.height - 40;
 
     const pixelSize = 2;
     const shipPixels = [
@@ -36,8 +36,7 @@ export default function Home() {
     ];
 
     const player = {
-      x:
-        width / 2 - (shipPixels[0].length * pixelSize) / 2,
+      x: width / 2 - (shipPixels[0].length * pixelSize) / 2,
       y: height - shipPixels.length * pixelSize - 2,
       width: shipPixels[0].length * pixelSize,
       height: shipPixels.length * pixelSize,
@@ -54,28 +53,28 @@ export default function Home() {
 
     const targetData = [
       {
-        type: "dialog" as const,
-        src: "https://img.icons8.com/ios-filled/50/info.png",
-        action: () => setDialog("base"),
+        type: 'dialog' as const,
+        src: 'https://img.icons8.com/ios-filled/50/info.png',
+        action: () => setDialog('base'),
       },
       {
-        type: "dialog" as const,
-        src: "https://img.icons8.com/ios-filled/50/code-file.png",
-        action: () => setDialog("projects"),
+        type: 'dialog' as const,
+        src: 'https://img.icons8.com/ios-filled/50/code-file.png',
+        action: () => setDialog('projects'),
       },
       {
-        type: "link" as const,
-        src: "https://img.icons8.com/ios-filled/50/instagram-new.png",
-        url: "https://www.instagram.com",
+        type: 'link' as const,
+        src: 'https://img.icons8.com/ios-filled/50/instagram-new.png',
+        url: 'https://www.instagram.com',
       },
       {
-        type: "link" as const,
-        src: "https://img.icons8.com/ios-filled/50/twitter.png",
-        url: "https://twitter.com",
+        type: 'link' as const,
+        src: 'https://img.icons8.com/ios-filled/50/twitter.png',
+        url: 'https://twitter.com',
       },
       {
-        type: "dead" as const,
-        src: "https://img.icons8.com/ios-filled/50/skull.png",
+        type: 'dead' as const,
+        src: 'https://img.icons8.com/ios-filled/50/skull.png',
       },
     ];
 
@@ -85,11 +84,11 @@ export default function Home() {
       const width = 20;
       const height = 14;
       switch (data.type) {
-        case "dialog":
+        case 'dialog':
           return new DialogTarget(x, y, width, height, data.src, data.action);
-        case "link":
+        case 'link':
           return new LinkTarget(x, y, width, height, data.src, data.url);
-        case "dead":
+        case 'dead':
           return new DeadTarget(x, y, width, height, data.src);
       }
     });
@@ -105,14 +104,14 @@ export default function Home() {
     }
 
     function keyDown(e: KeyboardEvent) {
-      if (e.key === "ArrowLeft") keys.current.left = true;
-      if (e.key === "ArrowRight") keys.current.right = true;
+      if (e.key === 'ArrowLeft') keys.current.left = true;
+      if (e.key === 'ArrowRight') keys.current.right = true;
     }
 
     function keyUp(e: KeyboardEvent) {
-      if (e.key === "ArrowLeft") keys.current.left = false;
-      if (e.key === "ArrowRight") keys.current.right = false;
-      if (e.key === "ArrowUp") shoot();
+      if (e.key === 'ArrowLeft') keys.current.left = false;
+      if (e.key === 'ArrowRight') keys.current.right = false;
+      if (e.key === 'ArrowUp') shoot();
     }
 
     function update() {
@@ -147,7 +146,7 @@ export default function Home() {
     function draw() {
       ctx.clearRect(0, 0, width, height);
 
-      ctx.fillStyle = "white";
+      ctx.fillStyle = 'white';
       shipPixels.forEach((row, ry) =>
         row.forEach((pixel, rx) => {
           if (pixel) {
@@ -161,7 +160,7 @@ export default function Home() {
         })
       );
 
-      ctx.fillStyle = "yellow";
+      ctx.fillStyle = 'yellow';
       bullets.forEach((b) => {
         ctx.beginPath();
         ctx.ellipse(b.x, b.y, b.rx, b.ry, 0, 0, Math.PI * 2);
@@ -179,11 +178,11 @@ export default function Home() {
 
     loop();
 
-    window.addEventListener("keydown", keyDown);
-    window.addEventListener("keyup", keyUp);
+    window.addEventListener('keydown', keyDown);
+    window.addEventListener('keyup', keyUp);
     return () => {
-      window.removeEventListener("keydown", keyDown);
-      window.removeEventListener("keyup", keyUp);
+      window.removeEventListener('keydown', keyDown);
+      window.removeEventListener('keyup', keyUp);
     };
   }, []);
 
@@ -221,10 +220,12 @@ export default function Home() {
         >
           ▶
         </button>
+        <button className={styles.controlButton}>X</button>
       </div>
-      {dialog === "base" && <BaseInfoDialog onClose={() => setDialog(null)} />}
-      {dialog === "projects" && <ProjectsDialog onClose={() => setDialog(null)} />}
+      {dialog === 'base' && <BaseInfoDialog onClose={() => setDialog(null)} />}
+      {dialog === 'projects' && (
+        <ProjectsDialog onClose={() => setDialog(null)} />
+      )}
     </div>
   );
 }
-
