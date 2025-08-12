@@ -1,95 +1,259 @@
-import Image from "next/image";
+"use client";
+
+import { useEffect, useRef } from "react";
 import styles from "./page.module.css";
 
 export default function Home() {
-  return (
-    <div className={styles.page}>
-      <main className={styles.main}>
-        <Image
-          className={styles.logo}
-          src="/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol>
-          <li>
-            Get started by editing <code>src/app/page.tsx</code>.
-          </li>
-          <li>Save and see your changes instantly.</li>
-        </ol>
+  const canvasRef = useRef<HTMLCanvasElement>(null);
+  const keys = useRef({ left: false, right: false });
 
-        <div className={styles.ctas}>
-          <a
-            className={styles.primary}
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className={styles.logo}
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
-            />
-            Deploy now
-          </a>
-          <a
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-            className={styles.secondary}
-          >
-            Read our docs
-          </a>
-        </div>
-      </main>
-      <footer className={styles.footer}>
-        <a
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
+  useEffect(() => {
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+    const ctx = canvas.getContext("2d");
+    if (!ctx) return;
+    ctx.imageSmoothingEnabled = false;
+
+    const width = canvas.width;
+    const height = canvas.height;
+
+    const pixelSize = 2;
+    const shipPixels = [
+      [0, 0, 1, 0, 0],
+      [0, 1, 1, 1, 0],
+      [1, 1, 1, 1, 1],
+      [1, 0, 1, 0, 1],
+      [1, 1, 1, 1, 1],
+    ];
+
+    const player = {
+      x:
+        width / 2 - (shipPixels[0].length * pixelSize) / 2,
+      y: height - shipPixels.length * pixelSize - 2,
+      width: shipPixels[0].length * pixelSize,
+      height: shipPixels.length * pixelSize,
+      speed: 2,
+    };
+
+    const bullets: {
+      x: number;
+      y: number;
+      rx: number;
+      ry: number;
+      speed: number;
+    }[] = [];
+
+    const invaderData = [
+      {
+        src: "https://upload.wikimedia.org/wikipedia/commons/a/a5/Instagram_icon.png",
+        url: "https://www.instagram.com",
+      },
+      {
+        src: "https://upload.wikimedia.org/wikipedia/commons/4/44/Facebook_Logo.png",
+        url: "https://www.facebook.com",
+      },
+      {
+        src: "https://upload.wikimedia.org/wikipedia/fr/c/c8/Twitter_Bird.svg",
+        url: "https://twitter.com",
+      },
+      {
+        src: "https://upload.wikimedia.org/wikipedia/commons/9/9f/Youtube_logo.png",
+        url: "https://www.youtube.com",
+      },
+      { dead: true },
+      { dead: true },
+    ];
+
+    const invaders = invaderData.map((data, i) => {
+      const inv = {
+        x: 20 + i * 30,
+        y: 20,
+        width: 20,
+        height: 14,
+        url: data.url ?? null,
+        dead: !!data.dead,
+        img: null as HTMLImageElement | null,
+        loaded: false,
+      };
+      if (data.src) {
+        const img = new Image();
+        img.crossOrigin = "anonymous";
+        img.onload = () => {
+          inv.loaded = true;
+        };
+        img.onerror = () => {
+          console.error(`Failed to load image: ${data.src}`);
+          inv.loaded = true;
+        };
+        img.src = data.src;
+        inv.img = img;
+      } else {
+        inv.loaded = true;
+      }
+      return inv;
+    });
+
+    function shoot() {
+      bullets.push({
+        x: player.x + player.width / 2,
+        y: player.y,
+        rx: 1,
+        ry: 2,
+        speed: 5,
+      });
+    }
+
+    function keyDown(e: KeyboardEvent) {
+      if (e.key === "ArrowLeft") keys.current.left = true;
+      if (e.key === "ArrowRight") keys.current.right = true;
+    }
+
+    function keyUp(e: KeyboardEvent) {
+      if (e.key === "ArrowLeft") keys.current.left = false;
+      if (e.key === "ArrowRight") keys.current.right = false;
+      if (e.key === "ArrowUp") shoot();
+    }
+
+    function update() {
+      if (keys.current.left) player.x -= player.speed;
+      if (keys.current.right) player.x += player.speed;
+      player.x = Math.max(0, Math.min(width - player.width, player.x));
+
+      bullets.forEach((b) => (b.y -= b.speed));
+      for (let i = bullets.length - 1; i >= 0; i--) {
+        if (bullets[i].y + bullets[i].ry < 0) bullets.splice(i, 1);
+      }
+
+      bulletsLoop: for (let i = bullets.length - 1; i >= 0; i--) {
+        const b = bullets[i];
+        for (let j = 0; j < invaders.length; j++) {
+          const inv = invaders[j];
+          if (
+            b.x - b.rx < inv.x + inv.width &&
+            b.x + b.rx > inv.x &&
+            b.y - b.ry < inv.y + inv.height &&
+            b.y + b.ry > inv.y
+          ) {
+            if (inv.url) {
+              window.open(inv.url, "_blank");
+              invaders.splice(j, 1);
+            }
+            bullets.splice(i, 1);
+            break bulletsLoop;
+          }
+        }
+      }
+    }
+
+    function draw() {
+      ctx.clearRect(0, 0, width, height);
+
+      ctx.fillStyle = "white";
+      shipPixels.forEach((row, ry) =>
+        row.forEach((pixel, rx) => {
+          if (pixel) {
+            ctx.fillRect(
+              player.x + rx * pixelSize,
+              player.y + ry * pixelSize,
+              pixelSize,
+              pixelSize
+            );
+          }
+        })
+      );
+
+      ctx.fillStyle = "yellow";
+      bullets.forEach((b) => {
+        ctx.beginPath();
+        ctx.ellipse(b.x, b.y, b.rx, b.ry, 0, 0, Math.PI * 2);
+        ctx.fill();
+      });
+
+      invaders.forEach((inv) => {
+        if (inv.img && inv.loaded) {
+          ctx.save();
+          ctx.beginPath();
+          ctx.ellipse(
+            inv.x + inv.width / 2,
+            inv.y + inv.height / 2,
+            inv.width / 2,
+            inv.height / 2,
+            0,
+            0,
+            Math.PI * 2
+          );
+          ctx.clip();
+          ctx.drawImage(inv.img, inv.x, inv.y, inv.width, inv.height);
+          ctx.restore();
+        } else {
+          ctx.fillStyle = "gray";
+          ctx.beginPath();
+          ctx.ellipse(
+            inv.x + inv.width / 2,
+            inv.y + inv.height / 2,
+            inv.width / 2,
+            inv.height / 2,
+            0,
+            0,
+            Math.PI * 2
+          );
+          ctx.fill();
+        }
+      });
+    }
+
+    function loop() {
+      update();
+      draw();
+      requestAnimationFrame(loop);
+    }
+
+    loop();
+
+    window.addEventListener("keydown", keyDown);
+    window.addEventListener("keyup", keyUp);
+    return () => {
+      window.removeEventListener("keydown", keyDown);
+      window.removeEventListener("keyup", keyUp);
+    };
+  }, []);
+
+  const startLeft = () => (keys.current.left = true);
+  const stopLeft = () => (keys.current.left = false);
+  const startRight = () => (keys.current.right = true);
+  const stopRight = () => (keys.current.right = false);
+
+  return (
+    <div className={styles.gameContainer}>
+      <canvas
+        ref={canvasRef}
+        width={200}
+        height={150}
+        className={styles.canvas}
+      />
+      <div className={styles.controls}>
+        <button
+          className={styles.controlButton}
+          onMouseDown={startLeft}
+          onMouseUp={stopLeft}
+          onMouseLeave={stopLeft}
+          onTouchStart={startLeft}
+          onTouchEnd={stopLeft}
         >
-          <Image
-            aria-hidden
-            src="/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
-          />
-          Learn
-        </a>
-        <a
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
+          ◀
+        </button>
+        <button
+          className={styles.controlButton}
+          onMouseDown={startRight}
+          onMouseUp={stopRight}
+          onMouseLeave={stopRight}
+          onTouchStart={startRight}
+          onTouchEnd={stopRight}
         >
-          <Image
-            aria-hidden
-            src="/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
-      </footer>
+          ▶
+        </button>
+      </div>
     </div>
   );
 }
+
