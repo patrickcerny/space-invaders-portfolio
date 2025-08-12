@@ -14,10 +14,11 @@
    width: 80vw;
    max-width: 800px;
    aspect-ratio: 4 / 3;
-   height: auto;
-   display: block;
-   image-rendering: pixelated;
- }
+ height: auto;
+ display: block;
+ image-rendering: pixelated;
+  border: 4px solid white;
+}
 
  .controls {
    position: absolute;

@@ -4,8 +4,9 @@ import { useEffect, useRef, useState } from "react";
 import styles from "./page.module.css";
 import DialogTarget from "@/targets/DialogTarget";
 import LinkTarget from "@/targets/LinkTarget";
-import DeadTarget from "@/targets/DeadTarget";
+import DummyTarget from "@/targets/DummyTarget";
 import Target from "@/targets/Target";
+import { TARGET_CONFIG } from "@/targets/targetConfig";
 import BaseInfoDialog from "@/components/dialogs/BaseInfoDialog";
 import ProjectsDialog from "@/components/dialogs/ProjectsDialog";
 
@@ -28,6 +29,11 @@ export default function Home() {
 
     const width = canvas.width;
     const height = canvas.height;
+
+    const stars = Array.from({ length: 40 }, () => ({
+      x: Math.random() * width,
+      y: Math.random() * height,
+    }));
 
     const pixelSize = 2;
     const shipPixels = [
@@ -55,45 +61,27 @@ export default function Home() {
       speed: number;
     }[] = [];
 
-    const targetData = [
-      {
-        type: "dialog" as const,
-        src: "https://img.icons8.com/color/48/info--v1.png",
-        action: () => setDialog("base"),
-      },
-      {
-        type: "dialog" as const,
-        src: "https://img.icons8.com/color/48/code-file.png",
-        action: () => setDialog("projects"),
-      },
-      {
-        type: "link" as const,
-        src: "https://img.icons8.com/color/48/instagram-new.png",
-        url: "https://www.instagram.com",
-      },
-      {
-        type: "link" as const,
-        src: "https://img.icons8.com/color/48/twitter--v1.png",
-        url: "https://twitter.com",
-      },
-      {
-        type: "dead" as const,
-        src: "https://img.icons8.com/color/48/skull.png",
-      },
-    ];
-
-    targets.current = targetData.map((data, i) => {
-      const x = 20 + i * 30;
-      const y = 20;
+    targets.current = TARGET_CONFIG.map((data, i) => {
+      const col = i % 5;
+      const row = Math.floor(i / 5);
+      const x = 20 + col * 30;
+      const y = 20 + row * 30;
       const width = 20;
       const height = 14;
       switch (data.type) {
         case "dialog":
-          return new DialogTarget(x, y, width, height, data.src, data.action);
+          return new DialogTarget(
+            x,
+            y,
+            width,
+            height,
+            data.src,
+            () => setDialog(data.dialog)
+          );
         case "link":
           return new LinkTarget(x, y, width, height, data.src, data.url);
-        case "dead":
-          return new DeadTarget(x, y, width, height, data.src);
+        case "dummy":
+          return new DummyTarget(x, y, width, height, data.src);
       }
     });
 
@@ -165,7 +153,13 @@ export default function Home() {
     }
 
     function draw() {
-      ctx.clearRect(0, 0, width, height);
+      ctx.fillStyle = "black";
+      ctx.fillRect(0, 0, width, height);
+
+      ctx.fillStyle = "white";
+      stars.forEach((s) => {
+        ctx.fillRect(Math.floor(s.x), Math.floor(s.y), 2, 2);
+      });
 
       ctx.fillStyle = "white";
       shipPixels.forEach((row, ry) =>
@@ -181,7 +175,7 @@ export default function Home() {
         })
       );
 
-      ctx.font = "12px serif";
+      ctx.font = "12px 'Press Start 2P', monospace";
       ctx.textAlign = "center";
       ctx.textBaseline = "middle";
       bullets.forEach((b) => {
