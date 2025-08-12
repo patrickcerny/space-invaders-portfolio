@@ -29,6 +29,33 @@ To learn more about Next.js, take a look at the following resources:
 
 You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
 
+## Docker
+
+To build and run the production image locally:
+
+```bash
+docker build -t space-invaders-portfolio .
+docker run -p 3000:3000 space-invaders-portfolio
+```
+
+The app is then available at [http://localhost:3000](http://localhost:3000).
+
+## Continuous Deployment
+
+This repository includes a GitHub Actions workflow that builds a Docker image and deploys it to a VPS on every push to the `master` branch.
+
+To enable deployments you must configure the following repository secrets:
+
+| Secret | Description |
+| ------ | ----------- |
+| `SSH_HOST` | VPS hostname or IP address |
+| `SSH_USER` | SSH user with permission to run Docker |
+| `SSH_KEY` | Private SSH key for the user |
+
+The workflow publishes the image to GitHub Container Registry at `ghcr.io/<owner>/<repo>:latest` and then pulls and runs the container on your server.
+
+On the VPS the container listens on port `3000` and can be proxied or exposed as needed.
+
 ## Deploy on Vercel
 
 The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
