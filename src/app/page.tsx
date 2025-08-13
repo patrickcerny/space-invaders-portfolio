@@ -30,8 +30,8 @@ export default function Home() {
     let height = 0;
     let scale = 1;
     let pixelSize = 2;
-    let targetSpeed = 0;
     let targetDir = 1;
+    let targetTick = 0;
     let player: {
       x: number;
       y: number;
@@ -67,9 +67,14 @@ export default function Home() {
       scale = width / 200;
       pixelSize = 2 * scale;
 
+      const controls = container.querySelector(
+        `.${styles.controls}`
+      ) as HTMLElement | null;
+      const bottomSpace = controls ? controls.clientHeight + 8 * scale : 0;
+
       player = {
         x: width / 2 - (shipPixels[0].length * pixelSize) / 2,
-        y: height - shipPixels.length * pixelSize,
+        y: height - bottomSpace - shipPixels.length * pixelSize,
         width: shipPixels[0].length * pixelSize,
         height: shipPixels.length * pixelSize,
         speed: 2 * scale,
@@ -83,7 +88,6 @@ export default function Home() {
 
       const targetWidth = 20 * scale;
       const targetHeight = 14 * scale;
-      targetSpeed = 0.3 * scale;
       const cols = 5;
       const marginX = width * 0.05;
       const marginY = height * 0.05;
@@ -153,15 +157,19 @@ export default function Home() {
       if (keys.current.right) player.x += player.speed;
       player.x = Math.max(0, Math.min(width - player.width, player.x));
 
-      // move targets horizontally
+      // move targets horizontally in chunky steps
       if (targets.current.length) {
-        const move = targetSpeed * targetDir;
-        targets.current.forEach((t) => (t.x += move));
-        const left = Math.min(...targets.current.map((t) => t.x));
-        const right = Math.max(...targets.current.map((t) => t.x + t.width));
-        if (left < 0 || right > width) {
-          targets.current.forEach((t) => (t.x -= move));
-          targetDir *= -1;
+        targetTick++;
+        if (targetTick >= 10) {
+          targetTick = 0;
+          const step = Math.round(pixelSize) * targetDir;
+          targets.current.forEach((t) => (t.x += step));
+          const left = Math.min(...targets.current.map((t) => t.x));
+          const right = Math.max(...targets.current.map((t) => t.x + t.width));
+          if (left < 0 || right > width) {
+            targets.current.forEach((t) => (t.x -= step));
+            targetDir *= -1;
+          }
         }
       }
 

@@ -50,6 +50,7 @@
   border-radius: 4px;
   font-size: clamp(16px, 6vw, 24px);
   user-select: none;
+  -webkit-user-select: none;
   touch-action: manipulation;
 }
 

@@ -3,7 +3,7 @@ export default abstract class Target {
   y: number;
   width: number;
   height: number;
-  img: HTMLImageElement | null = null;
+  img: HTMLImageElement | HTMLCanvasElement | null = null;
   loaded = false;
 
   constructor(x: number, y: number, width: number, height: number, src?: string) {
@@ -16,6 +16,16 @@ export default abstract class Target {
       const img = new Image();
       img.crossOrigin = "anonymous";
       img.onload = () => {
+        const size = 16;
+        const px = document.createElement("canvas");
+        px.width = size;
+        px.height = size;
+        const pctx = px.getContext("2d");
+        if (pctx) {
+          pctx.imageSmoothingEnabled = false;
+          pctx.drawImage(img, 0, 0, size, size);
+          this.img = px;
+        }
         this.loaded = true;
       };
       img.onerror = () => {
@@ -24,14 +34,13 @@ export default abstract class Target {
         this.loaded = true;
       };
       img.src = src;
-      this.img = img;
     } else {
       this.loaded = true;
     }
   }
 
   draw(ctx: CanvasRenderingContext2D) {
-    if (this.img && this.loaded && this.img.naturalWidth > 0) {
+    if (this.img && this.loaded) {
       ctx.save();
       ctx.imageSmoothingEnabled = false;
       ctx.beginPath();
