@@ -110,7 +110,11 @@ export default function Home() {
       }
     }, 2000);
 
+    let lastShot = 0;
     function shoot() {
+      const now = performance.now();
+      if (now - lastShot < 1000) return;
+      lastShot = now;
       setShowInstructions(false);
       bullets.push({
         x: player.x + player.width / 2,
