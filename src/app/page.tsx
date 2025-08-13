@@ -22,32 +22,30 @@ export default function Home() {
   useEffect(() => {
     const canvas = canvasRef.current;
     if (!canvas) return;
-    const context = canvas.getContext("2d");
-    if (!context) return;
-    const ctx = context;
+    const ctx = canvas.getContext("2d");
+    if (!ctx) return;
     ctx.imageSmoothingEnabled = false;
 
-    const resizeCanvas = () => {
-      const container = canvas.parentElement as HTMLElement;
-      if (!container) return;
-      const widthScale = container.clientWidth / canvas.width;
-      const heightScale = container.clientHeight / canvas.height;
-      const scale = Math.min(widthScale, heightScale);
-      canvas.style.width = `${canvas.width * scale}px`;
-      canvas.style.height = `${canvas.height * scale}px`;
+    let width = 0;
+    let height = 0;
+    let scale = 1;
+    let pixelSize = 2;
+    let player: {
+      x: number;
+      y: number;
+      width: number;
+      height: number;
+      speed: number;
     };
-    resizeCanvas();
-    window.addEventListener("resize", resizeCanvas);
+    let bullets: {
+      x: number;
+      y: number;
+      rx: number;
+      ry: number;
+      speed: number;
+    }[] = [];
+    let stars: { x: number; y: number }[] = [];
 
-    const width = canvas.width;
-    const height = canvas.height;
-
-    const stars = Array.from({ length: 40 }, () => ({
-      x: Math.random() * width,
-      y: Math.random() * height,
-    }));
-
-    const pixelSize = 2;
     const shipPixels = [
       [0, 0, 1, 0, 0],
       [0, 1, 1, 1, 0],
@@ -56,73 +54,67 @@ export default function Home() {
       [1, 1, 1, 1, 1],
     ];
 
-    const player = {
-      x:
-        width / 2 - (shipPixels[0].length * pixelSize) / 2,
-      y: height - shipPixels.length * pixelSize - 2,
-      width: shipPixels[0].length * pixelSize,
-      height: shipPixels.length * pixelSize,
-      speed: 2,
+    const init = () => {
+      const container = canvas.parentElement as HTMLElement;
+      if (!container) return;
+      canvas.width = container.clientWidth;
+      canvas.height = container.clientHeight;
+      width = canvas.width;
+      height = canvas.height;
+      scale = width / 200;
+      pixelSize = 2 * scale;
+
+      player = {
+        x: width / 2 - (shipPixels[0].length * pixelSize) / 2,
+        y: height - shipPixels.length * pixelSize,
+        width: shipPixels[0].length * pixelSize,
+        height: shipPixels.length * pixelSize,
+        speed: 2 * scale,
+      };
+
+      bullets = [];
+      stars = Array.from({ length: 40 }, () => ({
+        x: Math.random() * width,
+        y: Math.random() * height,
+      }));
+
+      const targetWidth = 20 * scale;
+      const targetHeight = 14 * scale;
+      const cols = 5;
+      const rows = Math.ceil(TARGET_CONFIG.length / cols);
+      const marginX = width * 0.05;
+      const xSpacing =
+        cols > 1 ? (width - marginX * 2 - targetWidth) / (cols - 1) : 0;
+      const ySpacing =
+        rows > 1 ? (player.y - targetHeight) / (rows - 1) : 0;
+
+      targets.current = TARGET_CONFIG.map((data, i) => {
+        const col = i % cols;
+        const row = Math.floor(i / cols);
+        const x = marginX + col * xSpacing;
+        const y = row * ySpacing;
+        const w = targetWidth;
+        const h = targetHeight;
+        switch (data.type) {
+          case "dialog":
+            return new DialogTarget(
+              x,
+              y,
+              w,
+              h,
+              data.src,
+              () => setDialog(data.dialog)
+            );
+          case "link":
+            return new LinkTarget(x, y, w, h, data.src, data.url);
+          case "dummy":
+            return new DummyTarget(x, y, w, h);
+        }
+      });
     };
 
-    const bullets: {
-      x: number;
-      y: number;
-      rx: number;
-      ry: number;
-      speed: number;
-    }[] = [];
-
-    const targetWidth = 20;
-    const targetHeight = 14;
-    const cols = 5;
-    const rows = Math.ceil(TARGET_CONFIG.length / cols);
-    const marginX = 20;
-    const marginTop = 20;
-    const marginBottom = 20;
-    const xSpacing =
-      cols > 1 ? (width - marginX * 2 - targetWidth) / (cols - 1) : 0;
-    const ySpacing =
-      rows > 1
-        ? (player.y - marginBottom - marginTop - targetHeight) / (rows - 1)
-        : 0;
-
-    targets.current = TARGET_CONFIG.map((data, i) => {
-      const col = i % cols;
-      const row = Math.floor(i / cols);
-      const x = marginX + col * xSpacing;
-      const y = marginTop + row * ySpacing;
-      const width = targetWidth;
-      const height = targetHeight;
-      switch (data.type) {
-        case "dialog":
-          return new DialogTarget(
-            x,
-            y,
-            width,
-            height,
-            data.src,
-            () => setDialog(data.dialog)
-          );
-        case "link":
-          return new LinkTarget(x, y, width, height, data.src, data.url);
-        case "dummy":
-          return new DummyTarget(x, y, width, height);
-      }
-    });
-
-    let targetDirection = 1;
-    let targetSteps = 0;
-    const targetInterval = setInterval(() => {
-      targets.current.forEach((t) => {
-        t.x += 10 * targetDirection;
-      });
-      targetSteps++;
-      if (targetSteps === 3) {
-        targetDirection *= -1;
-        targetSteps = 0;
-      }
-    }, 2000);
+    init();
+    window.addEventListener("resize", init);
 
     let lastShot = 0;
     function shoot() {
@@ -133,9 +125,9 @@ export default function Home() {
       bullets.push({
         x: player.x + player.width / 2,
         y: player.y,
-        rx: 2,
-        ry: 6,
-        speed: 5,
+        rx: 2 * scale,
+        ry: 6 * scale,
+        speed: 5 * scale,
       });
     }
 
@@ -205,7 +197,7 @@ export default function Home() {
         })
       );
 
-      ctx.font = "12px 'Press Start 2P', monospace";
+      ctx.font = `${12 * scale}px 'Press Start 2P', monospace`;
       ctx.textAlign = "center";
       ctx.textBaseline = "middle";
       bullets.forEach((b) => {
@@ -228,8 +220,7 @@ export default function Home() {
     return () => {
       window.removeEventListener("keydown", keyDown);
       window.removeEventListener("keyup", keyUp);
-      window.removeEventListener("resize", resizeCanvas);
-      clearInterval(targetInterval);
+      window.removeEventListener("resize", init);
     };
   }, []);
 

@@ -62,5 +62,12 @@ export const TARGET_CONFIG: TargetConfig[] = [
   { type: "dummy" },
   { type: "dummy" },
   { type: "dummy" },
+
+  // Row 4
+  { type: "dummy" },
+  { type: "dummy" },
+  { type: "dummy" },
+  { type: "dummy" },
+  { type: "dummy" },
 ];
 
