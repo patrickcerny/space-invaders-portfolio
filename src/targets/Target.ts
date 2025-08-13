@@ -20,9 +20,17 @@ export default abstract class Target {
         const px = document.createElement("canvas");
         px.width = size;
         px.height = size;
-        const pctx = px.getContext("2d");
+        type SmoothingCtx = CanvasRenderingContext2D & {
+          mozImageSmoothingEnabled?: boolean;
+          webkitImageSmoothingEnabled?: boolean;
+          msImageSmoothingEnabled?: boolean;
+        };
+        const pctx = px.getContext("2d") as SmoothingCtx | null;
         if (pctx) {
           pctx.imageSmoothingEnabled = false;
+          pctx.mozImageSmoothingEnabled = false;
+          pctx.webkitImageSmoothingEnabled = false;
+          pctx.msImageSmoothingEnabled = false;
           pctx.drawImage(img, 0, 0, size, size);
           this.img = px;
         }
@@ -42,7 +50,16 @@ export default abstract class Target {
   draw(ctx: CanvasRenderingContext2D) {
     if (this.img && this.loaded) {
       ctx.save();
-      ctx.imageSmoothingEnabled = false;
+      type SmoothingCtx = CanvasRenderingContext2D & {
+        mozImageSmoothingEnabled?: boolean;
+        webkitImageSmoothingEnabled?: boolean;
+        msImageSmoothingEnabled?: boolean;
+      };
+      const sctx = ctx as SmoothingCtx;
+      sctx.imageSmoothingEnabled = false;
+      sctx.mozImageSmoothingEnabled = false;
+      sctx.webkitImageSmoothingEnabled = false;
+      sctx.msImageSmoothingEnabled = false;
       ctx.beginPath();
       ctx.ellipse(
         Math.round(this.x + this.width / 2),

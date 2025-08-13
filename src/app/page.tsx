@@ -22,9 +22,17 @@ export default function Home() {
   useEffect(() => {
     const canvas = canvasRef.current;
     if (!canvas) return;
-    const ctx = canvas.getContext("2d");
+    type SmoothingCtx = CanvasRenderingContext2D & {
+      mozImageSmoothingEnabled?: boolean;
+      webkitImageSmoothingEnabled?: boolean;
+      msImageSmoothingEnabled?: boolean;
+    };
+    const ctx = canvas.getContext("2d") as SmoothingCtx | null;
     if (!ctx) return;
     ctx.imageSmoothingEnabled = false;
+    ctx.mozImageSmoothingEnabled = false;
+    ctx.webkitImageSmoothingEnabled = false;
+    ctx.msImageSmoothingEnabled = false;
 
     let width = 0;
     let height = 0;
@@ -62,6 +70,9 @@ export default function Home() {
       canvas.width = container.clientWidth;
       canvas.height = container.clientHeight;
       ctx.imageSmoothingEnabled = false;
+      ctx.mozImageSmoothingEnabled = false;
+      ctx.webkitImageSmoothingEnabled = false;
+      ctx.msImageSmoothingEnabled = false;
       width = canvas.width;
       height = canvas.height;
       scale = width / 200;
@@ -70,7 +81,7 @@ export default function Home() {
       const controls = container.querySelector(
         `.${styles.controls}`
       ) as HTMLElement | null;
-      const bottomSpace = controls ? controls.clientHeight + 8 * scale : 0;
+      const bottomSpace = controls ? controls.clientHeight + 16 * scale : 0;
 
       player = {
         x: width / 2 - (shipPixels[0].length * pixelSize) / 2,
