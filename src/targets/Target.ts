@@ -33,27 +33,34 @@ export default abstract class Target {
   draw(ctx: CanvasRenderingContext2D) {
     if (this.img && this.loaded && this.img.naturalWidth > 0) {
       ctx.save();
+      ctx.imageSmoothingEnabled = false;
       ctx.beginPath();
       ctx.ellipse(
-        this.x + this.width / 2,
-        this.y + this.height / 2,
-        this.width / 2,
-        this.height / 2,
+        Math.round(this.x + this.width / 2),
+        Math.round(this.y + this.height / 2),
+        Math.round(this.width / 2),
+        Math.round(this.height / 2),
         0,
         0,
         Math.PI * 2
       );
       ctx.clip();
-      ctx.drawImage(this.img, this.x, this.y, this.width, this.height);
+      ctx.drawImage(
+        this.img,
+        Math.round(this.x),
+        Math.round(this.y),
+        Math.round(this.width),
+        Math.round(this.height)
+      );
       ctx.restore();
     } else {
       ctx.fillStyle = "gray";
       ctx.beginPath();
       ctx.ellipse(
-        this.x + this.width / 2,
-        this.y + this.height / 2,
-        this.width / 2,
-        this.height / 2,
+        Math.round(this.x + this.width / 2),
+        Math.round(this.y + this.height / 2),
+        Math.round(this.width / 2),
+        Math.round(this.height / 2),
         0,
         0,
         Math.PI * 2

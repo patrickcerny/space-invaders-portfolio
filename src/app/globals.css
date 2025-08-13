@@ -29,6 +29,11 @@ body {
   -moz-osx-font-smoothing: grayscale;
 }
 
+img,
+canvas {
+  image-rendering: pixelated;
+}
+
 * {
   box-sizing: border-box;
   padding: 0;
