@@ -20,6 +20,7 @@ export default abstract class Target {
       };
       img.onerror = () => {
         console.error(`Failed to load image: ${src}`);
+        this.img = null;
         this.loaded = true;
       };
       img.src = src;
@@ -30,7 +31,7 @@ export default abstract class Target {
   }
 
   draw(ctx: CanvasRenderingContext2D) {
-    if (this.img && this.loaded) {
+    if (this.img && this.loaded && this.img.naturalWidth > 0) {
       ctx.save();
       ctx.beginPath();
       ctx.ellipse(
