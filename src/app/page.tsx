@@ -27,18 +27,6 @@ export default function Home() {
     const ctx = context;
     ctx.imageSmoothingEnabled = false;
 
-    const resizeCanvas = () => {
-      const container = canvas.parentElement as HTMLElement;
-      if (!container) return;
-      const widthScale = container.clientWidth / canvas.width;
-      const heightScale = container.clientHeight / canvas.height;
-      const scale = Math.min(widthScale, heightScale);
-      canvas.style.width = `${canvas.width * scale}px`;
-      canvas.style.height = `${canvas.height * scale}px`;
-    };
-    resizeCanvas();
-    window.addEventListener("resize", resizeCanvas);
-
     const width = canvas.width;
     const height = canvas.height;
 
@@ -73,13 +61,17 @@ export default function Home() {
       speed: number;
     }[] = [];
 
+    const cols = 5;
+    const targetWidth = 20;
+    const targetHeight = 14;
+    const spacingX = (width - targetWidth * cols) / (cols - 1);
     targets.current = TARGET_CONFIG.map((data, i) => {
-      const col = i % 5;
-      const row = Math.floor(i / 5);
-      const x = 20 + col * 30;
-      const y = 20 + row * 30;
-      const width = 20;
-      const height = 14;
+      const col = i % cols;
+      const row = Math.floor(i / cols);
+      const x = col * (targetWidth + spacingX);
+      const y = row * 30;
+      const width = targetWidth;
+      const height = targetHeight;
       switch (data.type) {
         case "dialog":
           return new DialogTarget(
@@ -214,7 +206,6 @@ export default function Home() {
     return () => {
       window.removeEventListener("keydown", keyDown);
       window.removeEventListener("keyup", keyUp);
-      window.removeEventListener("resize", resizeCanvas);
       clearInterval(targetInterval);
     };
   }, []);
