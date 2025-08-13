@@ -30,6 +30,8 @@ export default function Home() {
     let height = 0;
     let scale = 1;
     let pixelSize = 2;
+    let targetSpeed = 0;
+    let targetDir = 1;
     let player: {
       x: number;
       y: number;
@@ -59,6 +61,7 @@ export default function Home() {
       if (!container) return;
       canvas.width = container.clientWidth;
       canvas.height = container.clientHeight;
+      ctx.imageSmoothingEnabled = false;
       width = canvas.width;
       height = canvas.height;
       scale = width / 200;
@@ -80,6 +83,7 @@ export default function Home() {
 
       const targetWidth = 20 * scale;
       const targetHeight = 14 * scale;
+      targetSpeed = 0.3 * scale;
       const cols = 5;
       const marginX = width * 0.05;
       const marginY = height * 0.05;
@@ -149,6 +153,18 @@ export default function Home() {
       if (keys.current.right) player.x += player.speed;
       player.x = Math.max(0, Math.min(width - player.width, player.x));
 
+      // move targets horizontally
+      if (targets.current.length) {
+        const move = targetSpeed * targetDir;
+        targets.current.forEach((t) => (t.x += move));
+        const left = Math.min(...targets.current.map((t) => t.x));
+        const right = Math.max(...targets.current.map((t) => t.x + t.width));
+        if (left < 0 || right > width) {
+          targets.current.forEach((t) => (t.x -= move));
+          targetDir *= -1;
+        }
+      }
+
       bullets.forEach((b) => (b.y -= b.speed));
       for (let i = bullets.length - 1; i >= 0; i--) {
         if (bullets[i].y + bullets[i].ry < 0) bullets.splice(i, 1);
@@ -174,6 +190,7 @@ export default function Home() {
     }
 
     function draw() {
+      ctx.imageSmoothingEnabled = false;
       ctx.fillStyle = "black";
       ctx.fillRect(0, 0, width, height);
 
