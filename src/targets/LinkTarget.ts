@@ -16,10 +16,6 @@ export default class LinkTarget extends Target {
   }
 
   onHit() {
-    const link = document.createElement("a");
-    link.href = this.url;
-    link.target = "_blank";
-    link.rel = "noopener noreferrer";
-    link.click();
+    window.open(this.url, "_blank");
   }
 }

@@ -27,6 +27,18 @@ export default function Home() {
     const ctx = context;
     ctx.imageSmoothingEnabled = false;
 
+    const resizeCanvas = () => {
+      const container = canvas.parentElement as HTMLElement;
+      if (!container) return;
+      const widthScale = container.clientWidth / canvas.width;
+      const heightScale = container.clientHeight / canvas.height;
+      const scale = Math.min(widthScale, heightScale);
+      canvas.style.width = `${canvas.width * scale}px`;
+      canvas.style.height = `${canvas.height * scale}px`;
+    };
+    resizeCanvas();
+    window.addEventListener("resize", resizeCanvas);
+
     const width = canvas.width;
     const height = canvas.height;
 
@@ -61,15 +73,25 @@ export default function Home() {
       speed: number;
     }[] = [];
 
-    const cols = 5;
     const targetWidth = 20;
     const targetHeight = 14;
-    const spacingX = (width - targetWidth * cols) / (cols - 1);
+    const cols = 5;
+    const rows = Math.ceil(TARGET_CONFIG.length / cols);
+    const marginX = 20;
+    const marginTop = 20;
+    const marginBottom = 20;
+    const xSpacing =
+      cols > 1 ? (width - marginX * 2 - targetWidth) / (cols - 1) : 0;
+    const ySpacing =
+      rows > 1
+        ? (player.y - marginBottom - marginTop - targetHeight) / (rows - 1)
+        : 0;
+
     targets.current = TARGET_CONFIG.map((data, i) => {
       const col = i % cols;
       const row = Math.floor(i / cols);
-      const x = col * (targetWidth + spacingX);
-      const y = row * 30;
+      const x = marginX + col * xSpacing;
+      const y = marginTop + row * ySpacing;
       const width = targetWidth;
       const height = targetHeight;
       switch (data.type) {
@@ -206,6 +228,7 @@ export default function Home() {
     return () => {
       window.removeEventListener("keydown", keyDown);
       window.removeEventListener("keyup", keyUp);
+      window.removeEventListener("resize", resizeCanvas);
       clearInterval(targetInterval);
     };
   }, []);
