@@ -29,10 +29,9 @@ export default function Home() {
 
     const resizeCanvas = () => {
       const { innerWidth, innerHeight } = window;
-      const scale = Math.min(
-        innerWidth / canvas.width,
-        innerHeight / canvas.height
-      );
+      const widthScale = innerWidth / canvas.width;
+      const heightScale = innerHeight / canvas.height;
+      const scale = innerHeight > innerWidth ? widthScale : Math.min(widthScale, heightScale);
       canvas.style.width = `${canvas.width * scale}px`;
       canvas.style.height = `${canvas.height * scale}px`;
     };
