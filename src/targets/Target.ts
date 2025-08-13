@@ -3,7 +3,7 @@ export default abstract class Target {
   y: number;
   width: number;
   height: number;
-  img: HTMLImageElement | null = null;
+  img: HTMLImageElement | HTMLCanvasElement | null = null;
   loaded = false;
 
   constructor(x: number, y: number, width: number, height: number, src?: string) {
@@ -16,6 +16,24 @@ export default abstract class Target {
       const img = new Image();
       img.crossOrigin = "anonymous";
       img.onload = () => {
+        const size = 16;
+        const px = document.createElement("canvas");
+        px.width = size;
+        px.height = size;
+        type SmoothingCtx = CanvasRenderingContext2D & {
+          mozImageSmoothingEnabled?: boolean;
+          webkitImageSmoothingEnabled?: boolean;
+          msImageSmoothingEnabled?: boolean;
+        };
+        const pctx = px.getContext("2d") as SmoothingCtx | null;
+        if (pctx) {
+          pctx.imageSmoothingEnabled = false;
+          pctx.mozImageSmoothingEnabled = false;
+          pctx.webkitImageSmoothingEnabled = false;
+          pctx.msImageSmoothingEnabled = false;
+          pctx.drawImage(img, 0, 0, size, size);
+          this.img = px;
+        }
         this.loaded = true;
       };
       img.onerror = () => {
@@ -24,36 +42,51 @@ export default abstract class Target {
         this.loaded = true;
       };
       img.src = src;
-      this.img = img;
     } else {
       this.loaded = true;
     }
   }
 
   draw(ctx: CanvasRenderingContext2D) {
-    if (this.img && this.loaded && this.img.naturalWidth > 0) {
+    if (this.img && this.loaded) {
       ctx.save();
+      type SmoothingCtx = CanvasRenderingContext2D & {
+        mozImageSmoothingEnabled?: boolean;
+        webkitImageSmoothingEnabled?: boolean;
+        msImageSmoothingEnabled?: boolean;
+      };
+      const sctx = ctx as SmoothingCtx;
+      sctx.imageSmoothingEnabled = false;
+      sctx.mozImageSmoothingEnabled = false;
+      sctx.webkitImageSmoothingEnabled = false;
+      sctx.msImageSmoothingEnabled = false;
       ctx.beginPath();
       ctx.ellipse(
-        this.x + this.width / 2,
-        this.y + this.height / 2,
-        this.width / 2,
-        this.height / 2,
+        Math.round(this.x + this.width / 2),
+        Math.round(this.y + this.height / 2),
+        Math.round(this.width / 2),
+        Math.round(this.height / 2),
         0,
         0,
         Math.PI * 2
       );
       ctx.clip();
-      ctx.drawImage(this.img, this.x, this.y, this.width, this.height);
+      ctx.drawImage(
+        this.img,
+        Math.round(this.x),
+        Math.round(this.y),
+        Math.round(this.width),
+        Math.round(this.height)
+      );
       ctx.restore();
     } else {
       ctx.fillStyle = "gray";
       ctx.beginPath();
       ctx.ellipse(
-        this.x + this.width / 2,
-        this.y + this.height / 2,
-        this.width / 2,
-        this.height / 2,
+        Math.round(this.x + this.width / 2),
+        Math.round(this.y + this.height / 2),
+        Math.round(this.width / 2),
+        Math.round(this.height / 2),
         0,
         0,
         Math.PI * 2
