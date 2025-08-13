@@ -9,15 +9,19 @@ export default function ProjectsDialog({ onClose }: Props) {
     <div className={styles.overlay}>
       <div className={styles.dialog}>
         <h2>Projects</h2>
-        <p>
-          I&apos;ve tackled a range of web and full-stack builds, from personal
-          experiments to client-focused apps. I also bring technical know-how to
-          multimedia film projects through Otiosum - Filmproduktion OG.
-        </p>
-        <p>
-          Recent highlights include this Space Invaders portfolio and several
-          small tools that sharpen my development skills.
-        </p>
+        <ul>
+          <li>
+            Built web and full-stack apps for personal experiments and clients.
+          </li>
+          <li>
+            Contributed technical know-how to multimedia film projects through
+            Otiosum - Filmproduktion OG.
+          </li>
+          <li>
+            Created this Space Invaders portfolio and several small tools to
+            sharpen my development skills.
+          </li>
+        </ul>
         <button className={styles.closeButton} onClick={onClose}>
           Close
         </button>

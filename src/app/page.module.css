@@ -1,7 +1,7 @@
 .gameContainer {
   position: relative;
   width: 100%;
-  min-height: 100vh;
+  height: 100dvh;
   background: black;
   overflow: hidden;
   display: flex;
@@ -10,19 +10,9 @@
   align-items: center;
 }
 
-@media (max-width: 768px) {
-  .gameContainer {
-    min-height: 130vh;
-  }
-}
-
  .canvas {
-   width: 80vw;
-   max-width: 800px;
-   aspect-ratio: 4 / 3;
- height: auto;
- display: block;
- image-rendering: pixelated;
+  display: block;
+  image-rendering: pixelated;
   border: 4px solid white;
 }
 

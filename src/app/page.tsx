@@ -27,6 +27,18 @@ export default function Home() {
     const ctx = context;
     ctx.imageSmoothingEnabled = false;
 
+    const resizeCanvas = () => {
+      const { innerWidth, innerHeight } = window;
+      const scale = Math.min(
+        innerWidth / canvas.width,
+        innerHeight / canvas.height
+      );
+      canvas.style.width = `${canvas.width * scale}px`;
+      canvas.style.height = `${canvas.height * scale}px`;
+    };
+    resizeCanvas();
+    window.addEventListener("resize", resizeCanvas);
+
     const width = canvas.width;
     const height = canvas.height;
 
@@ -198,6 +210,7 @@ export default function Home() {
     return () => {
       window.removeEventListener("keydown", keyDown);
       window.removeEventListener("keyup", keyUp);
+      window.removeEventListener("resize", resizeCanvas);
       clearInterval(targetInterval);
     };
   }, []);

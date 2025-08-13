@@ -10,13 +10,14 @@ export default function BaseInfoDialog({ onClose }: Props) {
       <div className={styles.dialog}>
         <h2>About</h2>
         <p>
-          Programming went from hobby to profession. Tutorials and the HAK
-          Bregenz Digital Business program gave me a foundation in web and
-          full-stack development.
+          Programming went from hobby to profession.<br />
+          Tutorials and the HAK Bregenz Digital Business program gave me a
+          foundation in web and full-stack development.
         </p>
         <p>
           I&apos;m the First Assistant Camera and co-founder of Otiosum -
-          Filmproduktion OG and currently study Technical Mathematics at TU.
+          Filmproduktion OG.<br />
+          I currently study Technical Mathematics at TU.
         </p>
         <p>
           Learn more at{' '}
