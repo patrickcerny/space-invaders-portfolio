@@ -81,18 +81,17 @@ export default function Home() {
       const targetWidth = 20 * scale;
       const targetHeight = 14 * scale;
       const cols = 5;
-      const rows = Math.ceil(TARGET_CONFIG.length / cols);
       const marginX = width * 0.05;
+      const marginY = height * 0.05;
       const xSpacing =
         cols > 1 ? (width - marginX * 2 - targetWidth) / (cols - 1) : 0;
-      const ySpacing =
-        rows > 1 ? (player.y - targetHeight) / (rows - 1) : 0;
+      const ySpacing = targetHeight * 1.5;
 
       targets.current = TARGET_CONFIG.map((data, i) => {
         const col = i % cols;
         const row = Math.floor(i / cols);
         const x = marginX + col * xSpacing;
-        const y = row * ySpacing;
+        const y = marginY + row * ySpacing;
         const w = targetWidth;
         const h = targetHeight;
         switch (data.type) {
