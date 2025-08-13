@@ -18,6 +18,12 @@
 .canvas {
   display: block;
   image-rendering: pixelated;
+  background: black;
+  width: 100%;
+  height: 100%;
+  touch-action: none;
+  user-select: none;
+  -webkit-user-select: none;
 }
 
 @media (max-width: 768px) {
@@ -36,6 +42,9 @@
    display: flex;
    justify-content: space-between;
    align-items: center;
+   user-select: none;
+   -webkit-user-select: none;
+   touch-action: none;
  }
 
  .moveControls {
@@ -55,6 +64,9 @@
    border: 1px solid white;
    border-radius: 4px;
    font-size: clamp(16px, 6vw, 24px);
+   user-select: none;
+   -webkit-user-select: none;
+   touch-action: none;
  }
 
  .controlButton:active {
