@@ -19,7 +19,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="de-CH">
+    <html lang="de-CH" suppressHydrationWarning>
       <body className={pressStart.className}>{children}</body>
     </html>
   );

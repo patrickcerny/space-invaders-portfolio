@@ -27,6 +27,18 @@ export default function Home() {
     const ctx = context;
     ctx.imageSmoothingEnabled = false;
 
+    const resizeCanvas = () => {
+      const container = canvas.parentElement as HTMLElement;
+      if (!container) return;
+      const widthScale = container.clientWidth / canvas.width;
+      const heightScale = container.clientHeight / canvas.height;
+      const scale = Math.min(widthScale, heightScale);
+      canvas.style.width = `${canvas.width * scale}px`;
+      canvas.style.height = `${canvas.height * scale}px`;
+    };
+    resizeCanvas();
+    window.addEventListener("resize", resizeCanvas);
+
     const width = canvas.width;
     const height = canvas.height;
 
@@ -98,7 +110,11 @@ export default function Home() {
       }
     }, 2000);
 
+    let lastShot = 0;
     function shoot() {
+      const now = performance.now();
+      if (now - lastShot < 1000) return;
+      lastShot = now;
       setShowInstructions(false);
       bullets.push({
         x: player.x + player.width / 2,
@@ -198,6 +214,7 @@ export default function Home() {
     return () => {
       window.removeEventListener("keydown", keyDown);
       window.removeEventListener("keyup", keyUp);
+      window.removeEventListener("resize", resizeCanvas);
       clearInterval(targetInterval);
     };
   }, []);

@@ -5,21 +5,33 @@ import Target from "./Target";
  * They render a small pixelated alien instead of loading an image.
  */
 export default class DummyTarget extends Target {
-  private static pixels = [
-    [0, 0, 1, 1, 1, 1, 0, 0, 0, 0],
-    [0, 1, 0, 1, 1, 0, 1, 0, 0, 0],
-    [1, 1, 1, 1, 1, 1, 1, 1, 0, 0],
-    [1, 0, 1, 1, 1, 1, 0, 1, 0, 0],
-    [1, 1, 1, 1, 1, 1, 1, 1, 0, 0],
-    [1, 0, 1, 0, 0, 1, 0, 1, 0, 0],
-    [1, 0, 0, 1, 1, 0, 0, 1, 0, 0],
+  private static frames = [
+    [
+      [0, 0, 1, 1, 1, 1, 0, 0, 0, 0],
+      [0, 1, 0, 1, 1, 0, 1, 0, 0, 0],
+      [1, 1, 1, 1, 1, 1, 1, 1, 0, 0],
+      [1, 0, 1, 1, 1, 1, 0, 1, 0, 0],
+      [1, 1, 1, 1, 1, 1, 1, 1, 0, 0],
+      [1, 0, 1, 0, 0, 1, 0, 1, 0, 0],
+      [1, 0, 0, 1, 1, 0, 0, 1, 0, 0],
+    ],
+    [
+      [0, 0, 1, 1, 1, 1, 0, 0, 0, 0],
+      [0, 1, 0, 1, 1, 0, 1, 0, 0, 0],
+      [1, 1, 1, 1, 1, 1, 1, 1, 0, 0],
+      [1, 0, 1, 1, 1, 1, 0, 1, 0, 0],
+      [1, 1, 1, 1, 1, 1, 1, 1, 0, 0],
+      [0, 1, 0, 0, 0, 0, 0, 1, 0, 0],
+      [0, 0, 1, 0, 0, 1, 0, 0, 1, 0],
+    ],
   ];
 
   draw(ctx: CanvasRenderingContext2D) {
-    const pixelW = this.width / DummyTarget.pixels[0].length;
-    const pixelH = this.height / DummyTarget.pixels.length;
+    const pixels = DummyTarget.frames[Math.floor(Date.now() / 300) % DummyTarget.frames.length];
+    const pixelW = this.width / pixels[0].length;
+    const pixelH = this.height / pixels.length;
     ctx.fillStyle = "white";
-    DummyTarget.pixels.forEach((row, y) =>
+    pixels.forEach((row, y) =>
       row.forEach((val, x) => {
         if (val) {
           ctx.fillRect(
