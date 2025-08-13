@@ -1,7 +1,7 @@
 export type TargetConfig =
   | { type: "dialog"; src: string; dialog: "base" | "projects" }
   | { type: "link"; src: string; url: string }
-  | { type: "dummy"; src: string };
+  | { type: "dummy" };
 
 // Configuration for the 3x5 grid of targets displayed in the game.
 // Icons are loaded from Icons8 and links can easily be changed here.
@@ -54,16 +54,13 @@ export const TARGET_CONFIG: TargetConfig[] = [
     src: "https://img.icons8.com/color/48/briefcase.png",
     url: "#",
   },
-  {
-    type: "dummy",
-    src: "https://img.icons8.com/color/48/space-invaders.png",
-  },
+  { type: "dummy" },
 
   // Row 3 - remaining dummy targets
-  { type: "dummy", src: "https://img.icons8.com/color/48/space-invaders.png" },
-  { type: "dummy", src: "https://img.icons8.com/color/48/space-invaders.png" },
-  { type: "dummy", src: "https://img.icons8.com/color/48/space-invaders.png" },
-  { type: "dummy", src: "https://img.icons8.com/color/48/space-invaders.png" },
-  { type: "dummy", src: "https://img.icons8.com/color/48/space-invaders.png" },
+  { type: "dummy" },
+  { type: "dummy" },
+  { type: "dummy" },
+  { type: "dummy" },
+  { type: "dummy" },
 ];
 

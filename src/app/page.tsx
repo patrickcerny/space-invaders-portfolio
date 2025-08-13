@@ -81,7 +81,7 @@ export default function Home() {
         case "link":
           return new LinkTarget(x, y, width, height, data.src, data.url);
         case "dummy":
-          return new DummyTarget(x, y, width, height, data.src);
+          return new DummyTarget(x, y, width, height);
       }
     });
 
@@ -227,7 +227,8 @@ export default function Home() {
       />
       {showInstructions && (
         <div className={styles.instructions}>
-          Use ◀ ▶ to move, 🚀 or spacebar to shoot
+          <h2>Welcome, pilot!</h2>
+          <p>Use ◀ ▶ to move and 🚀 or spacebar to shoot</p>
         </div>
       )}
       <div className={styles.controls}>
