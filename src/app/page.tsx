@@ -32,7 +32,7 @@ export default function Home() {
       if (!container) return;
       const widthScale = container.clientWidth / canvas.width;
       const heightScale = container.clientHeight / canvas.height;
-      const scale = Math.max(widthScale, heightScale);
+      const scale = Math.min(widthScale, heightScale);
       canvas.style.width = `${canvas.width * scale}px`;
       canvas.style.height = `${canvas.height * scale}px`;
     };
