@@ -284,7 +284,7 @@ export default function Home() {
       />
       {showInstructions && (
         <div className={styles.instructions}>
-          <h2>Welcome, pilot!</h2>
+          <h2>Welcome Pirate!</h2>
           <p>Use ◀ ▶ to move and 🚀 or spacebar to shoot</p>
         </div>
       )}
