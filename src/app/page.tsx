@@ -64,7 +64,15 @@ export default function Home() {
       [1, 1, 1, 1, 1],
     ];
 
-    const bulletPixels = [[1], [1], [1], [1]];
+    const bulletPixels = [
+      [0, 1, 0],
+      [1, 1, 1],
+      [1, 1, 1],
+      [1, 1, 1],
+      [1, 0, 1],
+      [1, 0, 1],
+      [0, 1, 0],
+    ];
 
     const init = () => {
       const container = canvas.parentElement as HTMLElement;
@@ -146,7 +154,7 @@ export default function Home() {
       const bh = bulletPixels.length * pixelSize;
       bullets.push({
         x: player.x + player.width / 2,
-        y: player.y,
+        y: player.y - bh / 2,
         rx: bw / 2,
         ry: bh / 2,
         speed: 5 * scale,

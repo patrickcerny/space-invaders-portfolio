@@ -10,9 +10,32 @@ const pressStart = Press_Start_2P({
 
 export const metadata: Metadata = {
   title: "Patrick Cerny - Portfolio",
-  description: "Space Invaders portfolio",
+  description: "Retro Space Invaders portfolio showcasing Patrick Cerny's work",
+  keywords: [
+    "Patrick Cerny",
+    "portfolio",
+    "web developer",
+    "space invaders",
+  ],
+  authors: [{ name: "Patrick Cerny" }],
+  robots: {
+    index: true,
+    follow: true,
+  },
   icons: {
     icon: "/favicon.svg",
+  },
+  openGraph: {
+    title: "Patrick Cerny - Portfolio",
+    description:
+      "Retro Space Invaders portfolio showcasing Patrick Cerny's work",
+    type: "website",
+  },
+  twitter: {
+    card: "summary",
+    title: "Patrick Cerny - Portfolio",
+    description:
+      "Retro Space Invaders portfolio showcasing Patrick Cerny's work",
   },
 };
 
