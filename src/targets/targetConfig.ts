@@ -18,22 +18,10 @@ export const TARGET_CONFIG: TargetConfig[] = [
     url: "https://stackoverflow.com/users/13879137/patrick-cerny",
   },
   {
-    type: "dialog",
-    src: "https://img.icons8.com/color/48/info--v1.png",
-    dialog: "base",
-  },
-  {
-    type: "dialog",
-    src: "https://img.icons8.com/color/48/code-file.png",
-    dialog: "projects",
-  },
-  {
     type: "link",
     src: "https://img.icons8.com/color/48/instagram-new.png",
     url: "https://www.instagram.com/patrick.cerny/",
   },
-
-  // Row 2
   {
     type: "link",
     src: "https://img.icons8.com/color/48/linkedin.png",
@@ -44,11 +32,15 @@ export const TARGET_CONFIG: TargetConfig[] = [
     src: "https://img.icons8.com/color/48/film-reel.png",
     url: "https://www.otiosum-austria.com/",
   },
+
+  // Row 2
   {
     type: "link",
     src: "https://img.icons8.com/color/48/briefcase.png",
     url: "https://www.gmg.biz/start/default.aspx#Start",
   },
+  { type: "dummy" },
+  { type: "dummy" },
   { type: "dummy" },
   { type: "dummy" },
 
@@ -62,8 +54,16 @@ export const TARGET_CONFIG: TargetConfig[] = [
   // Row 4
   { type: "dummy" },
   { type: "dummy" },
-  { type: "dummy" },
-  { type: "dummy" },
+  {
+    type: "dialog",
+    src: "https://img.icons8.com/color/48/info--v1.png",
+    dialog: "base",
+  },
+  {
+    type: "dialog",
+    src: "https://img.icons8.com/color/48/code-file.png",
+    dialog: "projects",
+  },
   { type: "dummy" },
 ];
 
