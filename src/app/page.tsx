@@ -64,6 +64,16 @@ export default function Home() {
       [1, 1, 1, 1, 1],
     ];
 
+    const bulletPixels = [
+      [0, 1, 0],
+      [1, 1, 1],
+      [1, 1, 1],
+      [1, 1, 1],
+      [1, 0, 1],
+      [1, 0, 1],
+      [0, 1, 0],
+    ];
+
     const init = () => {
       const container = canvas.parentElement as HTMLElement;
       if (!container) return;
@@ -140,11 +150,13 @@ export default function Home() {
       if (now - lastShot < 1000) return;
       lastShot = now;
       setShowInstructions(false);
+      const bw = bulletPixels[0].length * pixelSize;
+      const bh = bulletPixels.length * pixelSize;
       bullets.push({
         x: player.x + player.width / 2,
-        y: player.y,
-        rx: 2 * scale,
-        ry: 6 * scale,
+        y: player.y - bh / 2,
+        rx: bw / 2,
+        ry: bh / 2,
         speed: 5 * scale,
       });
     }
@@ -232,11 +244,19 @@ export default function Home() {
         })
       );
 
-      ctx.font = `${12 * scale}px 'Press Start 2P', monospace`;
-      ctx.textAlign = "center";
-      ctx.textBaseline = "middle";
       bullets.forEach((b) => {
-        ctx.fillText("🚀", b.x, b.y);
+        bulletPixels.forEach((row, ry) =>
+          row.forEach((pixel, rx) => {
+            if (pixel) {
+              ctx.fillRect(
+                b.x - b.rx + rx * pixelSize,
+                b.y - b.ry + ry * pixelSize,
+                pixelSize,
+                pixelSize
+              );
+            }
+          })
+        );
       });
 
       targets.current.forEach((t) => t.draw(ctx));
@@ -284,7 +304,7 @@ export default function Home() {
       />
       {showInstructions && (
         <div className={styles.instructions}>
-          <h2>Welcome, pilot!</h2>
+          <h2>Welcome Pirate!</h2>
           <p>Use ◀ ▶ to move and 🚀 or spacebar to shoot</p>
         </div>
       )}
