@@ -221,6 +221,7 @@ export default function Home() {
     }
 
     function draw() {
+      if(ctx == null) return;
       ctx.imageSmoothingEnabled = false;
       ctx.fillStyle = "black";
       ctx.fillRect(0, 0, width, height);
